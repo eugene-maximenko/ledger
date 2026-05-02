@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build / compile
+dist/
+build/
+*.tsbuildinfo
+
+# Test & coverage
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env & secrets (keep checked-in test fixture)
+.env
+.env.*
+!.env.example
+!test/.env.test
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE (optional local settings)
+.idea/
+*.swp
+*.swo
+
+# Docker / local volumes (if used)
+*.local

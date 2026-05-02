@@ -1,0 +1,11 @@
+/** Deterministic IDs from migration `SeedCoreData1737386400001`. */
+export const SEED_ESCROW_ACCOUNT_ID = 'a0000001-0000-4000-8000-000000000001';
+export const SEED_REVENUE_ACCOUNT_ID = 'a0000001-0000-4000-8000-000000000002';
+export const SEED_MERCHANT_PAYABLE_ACCOUNT_ID = 'a0000001-0000-4000-8000-000000000003';
+export const SEED_EXTERNAL_ACCOUNT_ID = 'a0000001-0000-4000-8000-000000000004';
+export const SEED_ARNE_MERCHANT_ID = 'b0000001-0000-4000-8000-000000000001';
+export const SEED_ARNE_WEBHOOK_URL = 'http://127.0.0.1:3050/mock/merchant-webhook';
+
+/** Dev-only merchant API secret (Bearer). Replace with Auth0 later. */
+export const SEED_ARNE_API_SECRET = 'dev_arne_sk_test_01';
+export const SEED_WEBHOOK_HMAC_SECRET = 'dev_webhook_secret';
