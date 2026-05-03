@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import * as request from 'supertest';
+import request from 'supertest';
 import dataSource from '../src/database/data-source';
 import {
   SEED_ARNE_API_SECRET,

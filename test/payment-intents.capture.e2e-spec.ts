@@ -1,7 +1,12 @@
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import dataSource from '../src/database/data-source';
-import { SEED_ARNE_API_SECRET } from '../src/database/seed-constants';
+import {
+  SEED_ARNE_API_SECRET,
+  SEED_ESCROW_ACCOUNT_ID,
+  SEED_EXTERNAL_ACCOUNT_ID,
+  SEED_REVENUE_ACCOUNT_ID,
+} from '../src/database/seed-constants';
 import {
   ledgerSignedSum,
   seedOtherMerchant,
@@ -80,15 +85,28 @@ describe('POST /payment-intents/:id/capture (e2e)', () => {
       .expect(200);
 
     const ledgerRows = await dataSource.query(
-      `SELECT "type", "amount" FROM "ledger_entries" WHERE "payment_intent_id" = $1`,
+      `SELECT "account_id", "type", "amount" FROM "ledger_entries" WHERE "payment_intent_id" = $1`,
       [intentId],
     );
     expect(ledgerRows).toHaveLength(3);
+    // Gross 1000: credit external (Masha pathway), debit escrow merchant net (970), debit revenue commission (30 = 3%).
     expect(ledgerRows).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ type: 'credit', amount: 1000 }),
-        expect.objectContaining({ type: 'debit', amount: 970 }),
-        expect.objectContaining({ type: 'debit', amount: 30 }),
+        expect.objectContaining({
+          account_id: SEED_EXTERNAL_ACCOUNT_ID,
+          type: 'credit',
+          amount: 1000,
+        }),
+        expect.objectContaining({
+          account_id: SEED_ESCROW_ACCOUNT_ID,
+          type: 'debit',
+          amount: 970,
+        }),
+        expect.objectContaining({
+          account_id: SEED_REVENUE_ACCOUNT_ID,
+          type: 'debit',
+          amount: 30,
+        }),
       ]),
     );
 

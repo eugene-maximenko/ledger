@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import dataSource from '../src/database/data-source';
 import { SEED_ARNE_API_SECRET, SEED_ARNE_MERCHANT_ID } from '../src/database/seed-constants';
 import {
@@ -130,13 +130,15 @@ describe('POST /payment-intents (e2e)', () => {
       .expect(401);
   });
 
-  it('400 when Idempotency-Key missing or blank', async () => {
+  it('400 when Idempotency-Key header is missing', async () => {
     await request(app!.getHttpServer())
       .post('/payment-intents')
       .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
       .send({ amount: 1, currency: 'USD' })
       .expect(400);
+  });
 
+  it('400 when Idempotency-Key is blank', async () => {
     await request(app!.getHttpServer())
       .post('/payment-intents')
       .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
@@ -145,18 +147,20 @@ describe('POST /payment-intents (e2e)', () => {
       .expect(400);
   });
 
-  it('400 on invalid body', async () => {
+  it('400 when amount is not positive', async () => {
     await request(app!.getHttpServer())
       .post('/payment-intents')
       .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
-      .set('Idempotency-Key', 'bad-body')
+      .set('Idempotency-Key', 'bad-body-zero-amount')
       .send({ amount: 0, currency: 'USD' })
       .expect(400);
+  });
 
+  it('400 when currency is not supported', async () => {
     await request(app!.getHttpServer())
       .post('/payment-intents')
       .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
-      .set('Idempotency-Key', 'bad-currency')
+      .set('Idempotency-Key', 'bad-currency-gbp')
       .send({ amount: 10, currency: 'GBP' })
       .expect(400);
   });

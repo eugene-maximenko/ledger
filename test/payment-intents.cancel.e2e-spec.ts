@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import dataSource from '../src/database/data-source';
 import { SEED_ARNE_API_SECRET, SEED_ARNE_MERCHANT_ID } from '../src/database/seed-constants';
 import {

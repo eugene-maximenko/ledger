@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import dataSource from '../src/database/data-source';
 import { SEED_ARNE_API_SECRET, SEED_ARNE_MERCHANT_ID } from '../src/database/seed-constants';
 import {
@@ -123,11 +123,11 @@ describe('POST /payment-intents/:id/confirm (e2e)', () => {
       .expect(409);
   });
 
-  it('400 on invalid body', async () => {
+  it('400 when confirm body omits cardToken', async () => {
     const created = await request(app!.getHttpServer())
       .post('/payment-intents')
       .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
-      .set('Idempotency-Key', 'idem-confirm-invalid-body')
+      .set('Idempotency-Key', 'idem-confirm-missing-token')
       .send({ amount: 1000, currency: 'USD' })
       .expect(201);
 
@@ -136,12 +136,30 @@ describe('POST /payment-intents/:id/confirm (e2e)', () => {
       .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
       .send({})
       .expect(400);
+  });
+
+  it('400 when cardToken is empty string', async () => {
+    const created = await request(app!.getHttpServer())
+      .post('/payment-intents')
+      .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
+      .set('Idempotency-Key', 'idem-confirm-empty-token')
+      .send({ amount: 1000, currency: 'USD' })
+      .expect(201);
 
     await request(app!.getHttpServer())
       .post(`/payment-intents/${created.body.id}/confirm`)
       .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
       .send({ cardToken: '' })
       .expect(400);
+  });
+
+  it('400 when cardToken does not match tok_* pattern', async () => {
+    const created = await request(app!.getHttpServer())
+      .post('/payment-intents')
+      .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
+      .set('Idempotency-Key', 'idem-confirm-bad-token-format')
+      .send({ amount: 1000, currency: 'USD' })
+      .expect(201);
 
     await request(app!.getHttpServer())
       .post(`/payment-intents/${created.body.id}/confirm`)

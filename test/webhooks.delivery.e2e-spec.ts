@@ -3,7 +3,7 @@ import { createHmac } from 'crypto';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { randomUUID } from 'crypto';
-import * as request from 'supertest';
+import request from 'supertest';
 import dataSource from '../src/database/data-source';
 import { WebhookEventStatus } from '../src/database/db.enums';
 import {

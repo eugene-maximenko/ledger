@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import dataSource from '../src/database/data-source';
 import {
   SEED_ARNE_API_SECRET,
@@ -58,17 +58,21 @@ describe('Payout settlement worker (e2e)', () => {
   }
 
   async function waitForRefundSucceeded(refundId: string): Promise<void> {
-    for (let i = 0; i < 50; i += 1) {
+    const maxAttempts = 50;
+    const delayMs = 100;
+    let lastStatus: string | undefined;
+    for (let i = 0; i < maxAttempts; i += 1) {
       const rows = (await dataSource.query(
         `SELECT "status" FROM "refunds" WHERE "id" = $1`,
         [refundId],
       )) as { status: string }[];
-      if (rows[0]?.status === 'succeeded') {
+      lastStatus = rows[0]?.status;
+      if (lastStatus === 'succeeded') {
         return;
       }
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
-    throw new Error(`Refund ${refundId} did not reach succeeded`);
+    throw new Error(`Refund ${refundId} did not reach succeeded; last status=${lastStatus ?? 'missing'}`);
   }
 
   it('moves due pending payout to paid and writes settlement ledger entries', async () => {
@@ -317,17 +321,7 @@ describe('Payout settlement worker (e2e)', () => {
       .send({ amount: 200 })
       .expect(201);
     expect(refund.body.id).toBeDefined();
-
-    for (let i = 0; i < 50; i += 1) {
-      const rows = (await dataSource.query(
-        `SELECT "status" FROM "refunds" WHERE "id" = $1`,
-        [refund.body.id as string],
-      )) as { status: string }[];
-      if (rows[0]?.status === 'succeeded') {
-        break;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
+    await waitForRefundSucceeded(refund.body.id as string);
 
     await dataSource.query(
       `UPDATE "payouts"

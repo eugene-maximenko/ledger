@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import * as request from 'supertest';
+import request from 'supertest';
 import dataSource from '../src/database/data-source';
 import { SEED_ARNE_API_SECRET } from '../src/database/seed-constants';
 import {
@@ -58,17 +58,19 @@ describe('Webhook journal events (e2e)', () => {
   ): Promise<void> {
     const maxAttempts = 50;
     const delayMs = 100;
+    let lastStatus: string | undefined;
     for (let i = 0; i < maxAttempts; i += 1) {
       const rows = (await dataSource.query(
         `SELECT "status" FROM "refunds" WHERE "id" = $1`,
         [refundId],
       )) as { status: string }[];
-      if (rows[0]?.status === status) {
+      lastStatus = rows[0]?.status;
+      if (lastStatus === status) {
         return;
       }
       await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
-    throw new Error(`Refund ${refundId} did not reach ${status} within ${maxAttempts * delayMs}ms`);
+    throw new Error(`Refund ${refundId} did not reach ${status}; last=${lastStatus ?? 'missing'} (>${maxAttempts * delayMs}ms)`);
   }
 
   async function expectPendingWebhookEvent(
