@@ -225,7 +225,7 @@ describe('Reconciliation report (e2e)', () => {
     );
   });
 
-  it('keeps escrow liability equal to pending payouts', async () => {
+  it('closingBalance matches merchant net after capture and refund', async () => {
     const intentId = await createCapturedIntent(SEED_ARNE_API_SECRET);
     const refund = await request(app!.getHttpServer())
       .post(`/payment-intents/${intentId}/refunds`)
@@ -243,9 +243,9 @@ describe('Reconciliation report (e2e)', () => {
       .query({ from, to, currency: 'USD' })
       .expect(200);
 
-    expect(res.body.pendingPayouts).toBe(770);
-    expect(res.body.escrowLiability).toBe(770);
-    expect(res.body.escrowLiability).toBe(res.body.pendingPayouts);
+    expect(res.body.openingBalance).toBe(0);
+    expect(res.body.closingBalance).toBe(770);
+    expect(res.body.closingBalance).toBe(res.body.openingBalance + res.body.totals.net);
   });
 
   it('returns 400 for invalid period range', async () => {

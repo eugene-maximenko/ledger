@@ -4,7 +4,6 @@ import { Public } from '../../common/metadata/public.metadata';
 import { HealthResponseDto } from './dto/health-response.dto';
 
 @ApiTags('health')
-@Public()
 @Controller('health')
 export class HealthController {
   @ApiOperation({
@@ -15,6 +14,7 @@ export class HealthController {
     description: 'API is healthy.',
     type: HealthResponseDto,
   })
+  @Public()
   @Get()
   getHealth(): HealthResponseDto {
     return { ok: true };

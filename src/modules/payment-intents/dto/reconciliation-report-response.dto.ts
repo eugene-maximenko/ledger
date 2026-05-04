@@ -80,13 +80,4 @@ export class ReconciliationReportResponseDto {
 
   @ApiProperty({ type: [ReconciliationMovementDto] })
   movements!: ReconciliationMovementDto[];
-
-  @ApiProperty({ example: 45 })
-  revenue!: number;
-
-  @ApiProperty({ example: 555 })
-  pendingPayouts!: number;
-
-  @ApiProperty({ example: 555 })
-  escrowLiability!: number;
 }

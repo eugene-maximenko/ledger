@@ -779,64 +779,6 @@ export class PaymentIntentsService {
     const net = inflowTotal - outflowTotal;
     const closingBalance = openingBalance + net;
 
-    const revenueRows = (await this.dataSource.query(
-      `SELECT COALESCE(SUM(le."amount"), 0)::int AS s
-       FROM "ledger_entries" le
-       WHERE le."account_id" = $1
-         AND le."type" = 'debit'
-         AND le."created_at" >= $2::timestamptz
-         AND le."created_at" <= $3::timestamptz`,
-      [SEED_REVENUE_ACCOUNT_ID, from.toISOString(), to.toISOString()],
-    )) as { s: number }[];
-    const revenue = Number(revenueRows[0]?.s ?? 0);
-
-    const pendingRows = (await this.dataSource.query(
-      `SELECT COALESCE(SUM(p."amount"), 0)::int AS s
-       FROM "payouts" p
-       INNER JOIN "payment_intents" pi ON pi."id" = p."payment_intent_id"
-       WHERE p."merchant_id" = $1
-         AND pi."currency" = $2
-         AND p."status" = $3`,
-      [merchantId, currency, PayoutStatus.Pending],
-    )) as { s: number }[];
-    const pendingPayouts = Number(pendingRows[0]?.s ?? 0);
-
-    const merchantNetCapturedRows = (await this.dataSource.query(
-      `SELECT COALESCE(SUM(
-         CAST(pi."amount" AS integer) - ROUND((CAST(pi."amount" AS numeric) * $1) / $2)
-       ), 0)::int AS s
-       FROM "payment_intents" pi
-       WHERE pi."merchant_id" = $3
-         AND pi."currency" = $4
-         AND pi."status" = $5`,
-      [CAPTURE_COMMISSION_BPS, BPS_BASE, merchantId, currency, PaymentIntentStatus.Succeeded],
-    )) as { s: number }[];
-    const merchantNetCaptured = Number(merchantNetCapturedRows[0]?.s ?? 0);
-
-    const succeededRefundsAllTimeRows = (await this.dataSource.query(
-      `SELECT COALESCE(SUM(r."amount"), 0)::int AS s
-       FROM "refunds" r
-       INNER JOIN "payment_intents" pi ON pi."id" = r."payment_intent_id"
-       WHERE pi."merchant_id" = $1
-         AND pi."currency" = $2
-         AND r."status" = $3`,
-      [merchantId, currency, RefundStatus.Succeeded],
-    )) as { s: number }[];
-    const succeededRefundsAllTime = Number(succeededRefundsAllTimeRows[0]?.s ?? 0);
-
-    const paidPayoutsAllTimeRows = (await this.dataSource.query(
-      `SELECT COALESCE(SUM(p."amount"), 0)::int AS s
-       FROM "payouts" p
-       INNER JOIN "payment_intents" pi ON pi."id" = p."payment_intent_id"
-       WHERE p."merchant_id" = $1
-         AND pi."currency" = $2
-         AND p."status" = $3`,
-      [merchantId, currency, PayoutStatus.Paid],
-    )) as { s: number }[];
-    const paidPayoutsAllTime = Number(paidPayoutsAllTimeRows[0]?.s ?? 0);
-
-    const escrowLiability = merchantNetCaptured - succeededRefundsAllTime - paidPayoutsAllTime;
-
     const captures = (await this.dataSource.query(
       `SELECT pi."id", pi."amount", pi."created_at"
        FROM "payment_intents" pi
@@ -927,9 +869,6 @@ export class PaymentIntentsService {
         net,
       },
       movements,
-      revenue,
-      pendingPayouts,
-      escrowLiability,
     };
   }
 
