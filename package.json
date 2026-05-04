@@ -12,6 +12,7 @@
     "dev:up": "docker compose up --build",
     "dev:down": "docker compose down",
     "dev:reset": "docker compose down && docker compose up --build",
+    "demo": "node scripts/demo.cjs",
     "lint": "eslint \"src/**/*.ts\"",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "typeorm": "typeorm-ts-node-commonjs -d src/database/data-source.ts",

@@ -15,7 +15,7 @@ import { PaymentIntentsModule } from './modules/payment-intents/payment-intents.
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      ignoreEnvFile: true,
       validate: validateEnvironment,
       load: [typeOrmConfig],
     }),

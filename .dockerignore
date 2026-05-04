@@ -4,9 +4,9 @@ coverage
 .git
 .gitignore
 *.md
+# Local env files (optional); never bake into image context
 .env
 .env.*
-!test/.env.test
 .idea
 *.log
 npm-debug.log*

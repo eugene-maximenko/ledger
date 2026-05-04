@@ -17,10 +17,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Env & secrets (keep checked-in test fixture)
+# Env (local overrides). E2e keeps `test/.env.test` in git.
 .env
 .env.*
-!.env.example
 !test/.env.test
 
 # OS
