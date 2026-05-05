@@ -17,10 +17,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Env (local overrides). E2e keeps `test/.env.test` in git.
+# Env (local overrides)
 .env
 .env.*
-!test/.env.test
 
 # OS
 .DS_Store

@@ -32,9 +32,9 @@ docker compose run --rm api sh -c "npm ci && npm run migration:run"
 docker compose up --build api
 ```
 
-**Host-only Nest** against compose Postgres: set `DB_HOST=localhost`, `DB_PORT=<HOST_DB_PORT default 5460>`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` (same defaults as [`docker-compose.yml`](docker-compose.yml)), then `npm install` && `npm run start:dev`.
+**Host-only Nest** against compose Postgres: set `DB_HOST=localhost`, `DB_PORT=<HOST_DB_PORT default 5460>`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` (same defaults as [`docker-compose.yml`](docker-compose.yml)), then `npm ci` && `npm run start:dev`.
 
-No committed env files — **[`docker-compose.yml`](docker-compose.yml)** defines service defaults (override with Compose env vars or a local `.env` that Compose reads; both are ignored by git / build context patterns).
+**[`docker-compose.yml`](docker-compose.yml)** defines service defaults (override with Compose env vars as needed).
 
 ---
 
@@ -72,6 +72,12 @@ No committed env files — **[`docker-compose.yml`](docker-compose.yml)** define
 ---
 
 Tests (optional):
+
+Run once before local e2e execution:
+
+```bash
+npm ci
+```
 
 ```bash
 npm run test:e2e:all
