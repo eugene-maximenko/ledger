@@ -16,7 +16,7 @@ export async function setupE2eApp(): Promise<INestApplication> {
     imports: [AppModule],
   }).compile();
 
-  const app = moduleFixture.createNestApplication();
+  const app = moduleFixture.createNestApplication({ logger: false });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

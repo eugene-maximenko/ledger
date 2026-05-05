@@ -5,10 +5,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
     "dev:up": "docker compose up --build",
     "dev:down": "docker compose down",
     "dev:reset": "docker compose down && docker compose up --build",
@@ -19,9 +16,7 @@
     "migration:generate": "npm run typeorm -- migration:generate src/database/migrations/auto",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
-    "test:e2e": "jest --config jest-e2e.config.js --runInBand --forceExit",
-    "test:e2e:db": "docker compose --profile test up -d postgres_test",
-    "test:e2e:all": "npm run test:e2e:db && npm run test:e2e"
+    "test:e2e:all": "docker compose --profile test up -d postgres_test && jest --config jest-e2e.config.js --runInBand --forceExit"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
