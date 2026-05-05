@@ -151,7 +151,6 @@ describe('Webhook delivery worker (e2e)', () => {
   function expectRetryDelayApprox(nextRetryAt: string, expectedMinutes: number): void {
     const msLeft = new Date(nextRetryAt).getTime() - Date.now();
     const expectedMs = expectedMinutes * 60 * 1000;
-    // Allow a broad window to avoid flaky CI checks.
     expect(msLeft).toBeGreaterThanOrEqual(expectedMs - 10_000);
     expect(msLeft).toBeLessThanOrEqual(expectedMs + 20_000);
   }

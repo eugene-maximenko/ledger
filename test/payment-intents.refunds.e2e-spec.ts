@@ -83,7 +83,6 @@ describe('POST /payment-intents/:id/refunds (e2e)', () => {
     const res = await request(app!.getHttpServer())
       .post(`/payment-intents/${succeededIntentId}/refunds`)
       .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
-      // 3% revenue (30 from 1000) is non-refundable, so max refundable is 970.
       .send({ amount: 970 })
       .expect(201);
 
@@ -177,7 +176,6 @@ describe('POST /payment-intents/:id/refunds (e2e)', () => {
   });
 
   it('409 when payment is not succeeded', async () => {
-    // Intentionally create only pending intent (no confirm/capture) for wrong-state check.
     const created = await request(app!.getHttpServer())
       .post('/payment-intents')
       .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
@@ -196,7 +194,6 @@ describe('POST /payment-intents/:id/refunds (e2e)', () => {
     await request(app!.getHttpServer())
       .post(`/payment-intents/${succeededIntentId}/refunds`)
       .set('Authorization', `Bearer ${SEED_ARNE_API_SECRET}`)
-      // 3% revenue is non-refundable => refundable_left starts at 970.
       .send({ amount: 971 })
       .expect(409);
   });
@@ -363,7 +360,6 @@ describe('POST /payment-intents/:id/refunds (e2e)', () => {
   });
 
   it('marks refund as failed when mock-bank reverse declines and does not create ledger entries', async () => {
-    // Test hook: simulate bank reverse decline for this payment by capture_id sentinel.
     await dataSource.query(
       `UPDATE "payment_intents" SET "capture_id" = $1 WHERE "id" = $2`,
       ['cap_decline_refund', succeededIntentId],

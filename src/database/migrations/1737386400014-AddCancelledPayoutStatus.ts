@@ -8,6 +8,5 @@ export class AddCancelledPayoutStatus1737386400014 implements MigrationInterface
   }
 
   public async down(): Promise<void> {
-    // Postgres enum values are not safely removable in down migration.
   }
 }

@@ -16,7 +16,7 @@ import {
 
 let app: INestApplication | undefined;
 const CAPTURE_AMOUNT = 1000;
-const FEE_BPS = 300; // 3%
+const FEE_BPS = 300;
 const BPS_BASE = 10_000;
 const CAPTURE_FEE = Math.round((CAPTURE_AMOUNT * FEE_BPS) / BPS_BASE);
 const MERCHANT_NET = CAPTURE_AMOUNT - CAPTURE_FEE;
@@ -106,7 +106,6 @@ describe('Reconciliation report (e2e)', () => {
     expect(res.body.periodFrom).toBeTruthy();
     expect(res.body.periodTo).toBeTruthy();
     expect(Array.isArray(res.body.movements)).toBe(true);
-    // Only period intent should affect period totals.
     expect(res.body.totals.inflow.total).toBe(CAPTURE_AMOUNT);
     expect(res.body.totals.outflow.fees).toBe(CAPTURE_FEE);
     expect(res.body.totals.outflow.refunds).toBe(200);

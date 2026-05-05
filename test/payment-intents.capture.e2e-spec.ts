@@ -89,7 +89,6 @@ describe('POST /payment-intents/:id/capture (e2e)', () => {
       [intentId],
     );
     expect(ledgerRows).toHaveLength(3);
-    // Gross 1000: credit external (Masha pathway), debit escrow merchant net (970), debit revenue commission (30 = 3%).
     expect(ledgerRows).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -117,7 +116,6 @@ describe('POST /payment-intents/:id/capture (e2e)', () => {
     expect(payouts).toHaveLength(1);
     expect(payouts[0].status).toBe('pending');
     expect(payouts[0].payment_intent_id).toBe(intentId);
-    // 3% commission from 1000 is 30, merchant payout is 970.
     expect(Number(payouts[0].amount)).toBe(970);
     expect(payouts[0].available_at).toBeDefined();
   });

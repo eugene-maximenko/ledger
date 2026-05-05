@@ -36,9 +36,9 @@ import { TokenizeCardDto } from './dto/tokenize-card.dto';
 import { TokenizeCardResponseDto } from './dto/tokenize-card-response.dto';
 
 const IDEMPOTENCY_TTL_MS = 24 * 60 * 60 * 1000;
-const CAPTURE_COMMISSION_BPS = 300; // 3.00%
+const CAPTURE_COMMISSION_BPS = 300; // 3%
 const BPS_BASE = 10_000;
-const PAYOUT_DELAY_MS = 30 * 1000; // 30 seconds for pet-project settlement cadence
+const PAYOUT_DELAY_MS = 30 * 1000;
 const DECLINE_TEST_CARD_NUMBER = '4000000000000002';
 const DECLINE_TOKEN = 'tok_decline_card_declined';
 const REFUND_DECLINE_CAPTURE_ID = 'cap_decline_refund';
@@ -536,7 +536,6 @@ export class PaymentIntentsService {
       );
 
       await queryRunner.commitTransaction();
-      // Mock async processor: we intentionally simulate out-of-band bank reverse completion.
       void this.processRefundMockAsync(refund.id, shouldFail);
       return payload;
     } catch (err) {
